@@ -1,7 +1,7 @@
 {
-  "name": "node-red-contrib-salesforce",
+  "name": "node-red-contrib-salesforce-stratus360",
   "version": "0.0.5",
-  "description": "A set of Node-RED nodes to interact with Salesforce and Force.com.",
+  "description": "A set of Node-RED nodes to interact with Salesforce and Force.com. A Fork from @jeffdonthemic node-red-contrib-salesforce",
   "author": {
     "name": "Jeff Douglas",
     "url": "http://blog.jeffdouglas.com"
