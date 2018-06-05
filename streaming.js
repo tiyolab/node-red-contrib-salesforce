@@ -11,7 +11,6 @@ module.exports = function (RED) {
     var node = this;
 
     node.disconnect = function(){
-      debugger;
       if(nodes[node.id]){
         if (nodes[node.id].client) {
           if(nodes[node.id].client.disconnect){
