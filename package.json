@@ -6,6 +6,10 @@
     "name": "Jeff Douglas",
     "url": "http://blog.jeffdouglas.com"
   },
+  "contributors": [{
+    "name": "Muhammad Sulistiyo",
+    "email": "tiyo.lab@gmail.com"
+  }],
   "repository": {
     "type": "git",
     "url": "https://github.com/tiyolab/node-red-contrib-salesforce-stratus360.git"
