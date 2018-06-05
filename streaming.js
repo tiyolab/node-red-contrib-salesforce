@@ -1,43 +1,64 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
 
   var nforce = require('nforce');
 
+  var nodes = {};
+
   function Streaming(config) {
-    RED.nodes.createNode(this,config);
+    RED.nodes.createNode(this, config);
     this.connection = RED.nodes.getNode(config.connection);
+    this.connection.subscribe(this, config);
     var node = this;
 
-    // create connection object
-    var org = nforce.createConnection({
-      clientId: this.connection.consumerKey,
-      clientSecret: this.connection.consumerSecret,
-      redirectUri: this.connection.callbackUrl,
-      environment: this.connection.environment,
-      mode: 'single'
-    });
+    node.disconnect = function(){
+      debugger;
+      if(nodes[node.id]){
+        if (nodes[node.id].client) {
+          if(nodes[node.id].client.disconnect){
+            nodes[node.id].client.disconnect();
+          }
+        }
+      }
+    }
 
-    org.authenticate({ username: this.connection.username, password: this.connection.password }, function(err, oauth) {
+    node.onConnectionFinished = function () {
+      if (config.isActive) {
+        const opts = {};
+        if (config.topicType === 'platform') {
+          opts.isEvent = true;
+        } else if (config.topicType === 'generic') {
+          opts.isSystem = true;
+        }
+        opts.topic = config.pushTopic
 
-      if(err) node.err(err);
+        node.disconnect();
+        
+        node.client = node.connection.org.createStreamClient();
+        var stream = node.client.subscribe(opts);
+        nodes[node.id] = node;
 
-      var client = org.createStreamClient();
-      var stream = client.subscribe({ topic: config.pushTopic });
-      node.log("Subscribing to topic: " + config.pushTopic );
+        node.status({ fill: "green", shape: "ring", text: "subscribing to " + config.pushTopic });
 
-      stream.on('error', function(err) {
-        node.log('Subscription error!!!');
-        node.log(err);
-        client.disconnect();
-      });
-
-      stream.on('data', function(data) {
-        node.send({
-          payload: data
+        stream.on('error', function (err) {
+          node.status({ fill: "red", shape: "ring", text: err.message });
+          node.client.disconnect();
         });
-      });
 
-    });
+        stream.on('data', function (data) {
+          node.send({
+            payload: data
+          });
+        });
+      } else {
+        node.disconnect();
+        node.status({ fill: 'gray', shape: 'ring', text: 'idle' });
+      }
+    }
+
+    if(node.connection.org.oauth){
+      node.onConnectionFinished();
+    }
 
   }
-  RED.nodes.registerType("streaming",Streaming);
+  RED.nodes.registerType("streaming", Streaming);
 }

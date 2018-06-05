@@ -4,31 +4,24 @@ module.exports = function(RED) {
 
   function Query(config) {
     RED.nodes.createNode(this,config);
+
     this.connection = RED.nodes.getNode(config.connection);
+    this.connection.subscribe(this, config);
+
     var node = this;
     this.on('input', function(msg) {
-
-      // show initial status of progress
-      node.status({fill:"green",shape:"ring",text:"connecting...."});
 
       // use msg query if node's query is blank
       if (msg.hasOwnProperty("query") && config.query === '') {
         config.query = msg.query;
       }
 
-      // create connection object
-      var org = nforce.createConnection({
-        clientId: this.connection.consumerKey,
-        clientSecret: this.connection.consumerSecret,
-        redirectUri: this.connection.callbackUrl,
-        environment: this.connection.environment,
-        mode: 'single'
-      });
+      // show initial status of progress
+      node.status({fill:"green",shape:"ring",text:"processing...."});
 
       // auth and run query
-      org.authenticate({ username: this.connection.username, password: this.connection.password }).then(function(){
-        return org.query({ query: config.query })
-      }).then(function(results) {
+      this.connection.org.query({ query: config.query })
+      .then(function(results) {
         msg.payload = {
           size: results.totalSize,
           records: results.records

@@ -5,13 +5,19 @@
         defaults: {
           name: {value: ''},
           pushTopic: {value: '', required: true},
-          connection: {value: '', type: 'connection-config', required: true}
+          connection: {value: '', type: 'connection-config', required: true},
+          topicType: {value: 'platform', required: true},
+          isActive: {value: false, required: false},
         },
         inputs:1,
         outputs:1,
         icon: "salesforce.png",
         label: function() {
           return this.name || 'streaming';
+        },
+        oneditsave: function() {
+            this.topicType = $("#node-config-input-topicType").val();
+            this.isActive = $("#node-input-isActive").val();
         }
     });
 </script>
@@ -26,8 +32,20 @@
         <input type="text" id="node-input-connection">
     </div>
     <div class="form-row">
+        <label for="node-config-input-topicType"><i class="fa fa-exchange"></i> Type</label>
+        <select id="node-config-input-topicType">
+          <option value="platform">Platform events</option>
+          <option value="pushtopic">Streaming (Push Topic)</option>
+          <option value="generic">Streaming (Generic)</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label for="node-input-connection"><i class="fa fa-bullhorn"></i> Push Topic</label>
         <input type="text" id="node-input-pushTopic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connection">Active</label>
+        <input type="checkbox" id="node-input-isActive">
     </div>
 </script>
 

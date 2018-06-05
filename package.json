@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jeffdonthemic/node-red-contrib-salesforce.git"
+    "url": "https://github.com/tiyolab/node-red-contrib-salesforce-stratus360.git"
   },
   "keywords": [
     "node-red",
